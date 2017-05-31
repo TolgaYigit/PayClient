@@ -12,11 +12,6 @@
     @endif
     <h2 class="">{{$payment->gateway->name}}</h2>
     <h4>Transection value: {{$payment->transection_value}} {{$payment->currency}}</h4>
-    @if($payment->status != 'completed')
-        {!! Form::open(['url' => '/']) !!}
-            <button type="submit" name="save" class="btn btn-default" value="confirm">Confirm Payment</button>
-        {!! Form::close() !!}
-    @else
-        <h4>Payment Already Completed!</h4>
-    @endif
+    <h5>Transection status: {{$payment->status}}</h5>
+    <a href="{{route('payment')}}" type="submit" name="save" class="btn btn-default" value="confirm">OK!</a>
 @endsection

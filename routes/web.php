@@ -13,4 +13,4 @@
 
 Route::any('/', 'HomeController@payment')->name('payment');
 
-Route::any('/confirmation/{payment_id}', 'HomeController@paymentConfirm')->name('paymentConfirm');
+Route::any('/{payment_id}', 'HomeController@paymentStatus')->name('paymentStatus');
