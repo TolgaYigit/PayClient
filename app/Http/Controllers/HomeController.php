@@ -14,9 +14,6 @@ class HomeController extends Controller
     public function payment(Request $request){
         $currencies = config('currencies');
 
-        //$payment = Gateway::with('payments')->first();
-        //dump($payment);exit;
-
         $gateways = Gateway::where('status', 1)->pluck('name', 'id')->toArray();
 
         if ($request->isMethod('post')) {
@@ -42,13 +39,6 @@ class HomeController extends Controller
             if(array_key_exists($request->currency, $currencies) && array_key_exists($request->gateway_id, $gateways)){
                 $gateway = Gateway::findOrFail($request->gateway_id);
 
-                //Calculating the transaction value
-                if($request->currency == $gateway->default_currency){
-                    $transaction_value = $request->payment_value;
-                } else {
-                    $transaction_value = $request->base_value * $gateway->exchange_rate;
-                }
-
                 //saving payment options
                 $payment = new Payment();
                 $payment->name = $request->name;
@@ -59,6 +49,7 @@ class HomeController extends Controller
                 $payment->status = 'pending';
                 $payment->save();
 
+                //processing payment
                 $service = new \App\Services\PaymentService($payment);
                 $service->checkCurrency();
                 if($service->pay() == 'success'){
@@ -69,7 +60,11 @@ class HomeController extends Controller
 
                 return redirect()->route('paymentStatus', ['payment_id' => $payment->id]);
             } else {
-                //dump('false');
+
+                //return with error message
+                return redirect()
+                    ->route('payment')
+                    ->withErrors(array('message' => 'Payment is unsuccessful. Please try again.'));
             }
         }
 
